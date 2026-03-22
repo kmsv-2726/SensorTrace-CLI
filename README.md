@@ -1,57 +1,70 @@
 # SensorTrace CLI
 
-SensorTrace CLI is an open-source Python tool for detecting hardware sensor side-channel attacks, targeting security researchers and developers. It provides real-time monitoring of processes and sensor data.
+An open-source Python tool for detecting hardware sensor side-channel attacks, designed for security researchers and developers.
 
-## Features
+## 🚀 Overview
 
-- **Real-time Monitoring**: Monitor process and sensor activities in real time.
-- **Log Management**: Read, view, and filter historical sensor activity logs.
-- **Statistics**: Display aggregated statistical sensor data over time.
+SensorTrace monitors process behavior and hardware sensor access in real-time, helping identify potential side-channel leaks or unauthorized sensor polling. It uses an intelligent detection engine to map process handles and WMI providers to physical hardware sensors.
 
-## Installation
+## ✨ Features
+
+- **Real-Time Live Monitor**: A `top`-style interactive dashboard powered by Rich.
+- **Deep Sensor Probing**:
+    - **NVIDIA GPU**: Real-time temperature, clock, and power monitoring via `nvidia-smi`.
+    - **Intel CPU**: Thermal zone monitoring via WMI ACPI.
+    - **Battery**: Detailed polling of charge levels and discharge rates.
+    - **Vendor Specifics**: Support for ASUS ROG EC (Armoury Crate) and Realtek Audio hardware detection.
+- **Heuristic Detection Engine**: 
+    - Cross-references open file handles against a known database of sensor paths (`/dev/cpu`, `/sys/class/hwmon`, etc.).
+    - Windows-specific fallback heuristics to identify WMI provider processes (`WmiPrvSE.exe`, `SensorsService.exe`, etc.).
+- **Smart Result Sorting**: Automatically floats processes with active sensor access to the top and highlights them.
+- **Filtering**: Ability to isolate specific processes or view *only* sensor-accessing ones with `--filter sensor`.
+
+## 🛠 Installation
 
 This project uses [Poetry](https://python-poetry.org/) for dependency management.
 
-1. Clone the repository and navigate into the `SensorTrace-CLI` directory:
-   ```bash
-   git clone <repository_url>
-   cd SensorTrace-CLI
-   ```
+```powershell
+# Clone the repository
+git clone https://github.com/kmsv-2726/SensorTrace-CLI.git
+cd SensorTrace-CLI
 
-2. Install the dependencies:
-   ```bash
-   poetry install
-   ```
-
-3. Activate the virtual environment:
-   ```bash
-   poetry shell
-   ```
-
-## Usage
-
-SensorTrace provides three primary commands:
-
-### `monitor`
-Starts real-time process + sensor monitoring.
-```bash
-sensortrace monitor --interval 5 --output json
+# Install dependencies
+poetry install
 ```
 
-### `logs`
-Shows and filters saved log entries.
-```bash
-sensortrace logs --filter "suspicious_activity"
+## 📖 Usage
+
+### Live Monitoring
+The primary command for real-time analysis:
+```powershell
+# Start the interactive dashboard (1s refresh)
+poetry run sensortrace monitor
+
+# Filter for a specific process
+poetry run sensortrace monitor --filter "chrome"
+
+# High-priority mode: only show processes with sensor access
+poetry run sensortrace monitor --filter sensor --interval 2
 ```
 
-### `stats`
-Displays aggregated sensor statistics.
-```bash
-sensortrace stats
+### Log Viewing (Stubbed)
+```powershell
+poetry run sensortrace logs --filter "unauthorized"
 ```
 
-### Help
-For a full list of commands and options, run:
-```bash
-sensortrace --help
+### Statistics (Stubbed)
+```powershell
+poetry run sensortrace stats --export csv
 ```
+
+## 🔧 Technical Stack
+
+- **Python 3.10+**
+- **Typer**: CLI Framework
+- **Rich**: Terminal UI, Layouts, and Live streams
+- **psutil**: System and process utilization
+- **WMI/PowerShell**: Deep Windows hardware integration
+
+## 🛡 Disclaimer
+*On Windows, some sensor access is inferred via WMI provider identification. For deep file handle inspection, running the terminal as Administrator is recommended.*
