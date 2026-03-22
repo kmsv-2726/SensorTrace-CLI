@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "sensortrace"
+version = "0.1.0"
+description = "An open-source Python tool for detecting hardware sensor side-channel attacks."
+authors = ["Author Name <author@example.com>"]
+readme = "README.md"
+packages = [{include = "sensortrace"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+typer = {extras = ["all"], version = "^0.12.3"}
+click = "8.1.7"
+rich = "^13.7.0"
+psutil = "^5.9.8"
+
+[tool.poetry.scripts]
+sensortrace = "sensortrace.cli:app"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
