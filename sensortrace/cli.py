@@ -12,13 +12,13 @@ app = typer.Typer(
 
 @app.command()
 def monitor(
-    interval: int = typer.Option(1, "--interval", help="Monitoring interval in seconds."),
+    interval: int = typer.Option(1, "--interval", help="Monitoring refresh interval in seconds."),
     output: str = typer.Option("table", "--output", help="Output format (e.g., table, json)."),
-    filter: Optional[str] = typer.Option(None, "--filter", help="Filter sensor data by keyword."),
+    filter: Optional[str] = typer.Option(None, "--filter", help="Filter by process name, or use 'sensor' for only active processes."),
     log: bool = typer.Option(False, "--log", help="Enable logging of sensor data.")
 ):
     """
-    Start real-time process and sensor monitoring.
+    Start real-time process and sensor monitoring dashboard.
     """
     run_monitor(interval=interval, output=output, filter=filter, log=log)
 
