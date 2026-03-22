@@ -1,44 +1,49 @@
 import typer
-from typing import Annotated, Optional
-from rich.console import Console
-
-from sensortrace.monitor import start_monitor
+from typing import Optional
+from sensortrace.monitor import run_monitor
 from sensortrace.logger import show_logs
-from sensortrace.stats import display_stats
-from sensortrace.config import DEFAULT_INTERVAL
+from sensortrace.stats import show_stats
 
 app = typer.Typer(
     name="sensortrace",
     help="SensorTrace CLI \u2014 A tool for detecting hardware sensor side-channel attacks.",
     no_args_is_help=True
 )
-console = Console()
 
 @app.command()
 def monitor(
-    interval: Annotated[int, typer.Option("--interval", "-i", help="Monitoring interval in seconds.")] = DEFAULT_INTERVAL,
-    output: Annotated[str, typer.Option("--output", "-o", help="Output format (e.g., json, csv).")] = "json"
+    interval: int = typer.Option(1, "--interval", help="Monitoring interval in seconds."),
+    output: str = typer.Option("table", "--output", help="Output format (e.g., table, json)."),
+    filter: Optional[str] = typer.Option(None, "--filter", help="Filter sensor data by keyword."),
+    log: bool = typer.Option(False, "--log", help="Enable logging of sensor data.")
 ):
     """
     Start real-time process and sensor monitoring.
     """
-    start_monitor(interval=interval, output=output)
+    run_monitor(interval=interval, output=output, filter=filter, log=log)
+
 
 @app.command()
 def logs(
-    filter_word: Annotated[Optional[str], typer.Option("--filter", "-f", help="Filter logs by keyword.")] = None
+    file: Optional[str] = typer.Option(None, "--file", help="Path to specific log file."),
+    filter: Optional[str] = typer.Option(None, "--filter", help="Filter logs by keyword."),
+    since: Optional[int] = typer.Option(None, "--since", help="Show logs since X minutes ago.")
 ):
     """
     Show and filter saved log entries.
     """
-    show_logs(filter_str=filter_word)
+    show_logs(file=file, filter=filter, since=since)
+
 
 @app.command()
-def stats():
+def stats(
+    export: Optional[str] = typer.Option("csv", "--export", help="Format to export statistics.")
+):
     """
     Display aggregated sensor statistics.
     """
-    display_stats()
+    show_stats(export=export)
+
 
 def main():
     app()
