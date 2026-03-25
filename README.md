@@ -4,21 +4,20 @@ An open-source Python tool for detecting hardware sensor side-channel attacks, d
 
 ## 🚀 Overview
 
-SensorTrace monitors process behavior and hardware sensor access in real-time, helping identify potential side-channel leaks or unauthorized sensor polling. It uses an intelligent detection engine to map process handles and WMI providers to physical hardware sensors.
+SensorTrace monitors process behavior and hardware sensor access in real-time. It maps process handles, registry flags, and WMI providers to physical hardware sensors to help identify unauthorized sensor polling or potential side-channel leaks.
 
 ## ✨ Features
 
-- **Real-Time Live Monitor**: A `top`-style interactive dashboard powered by Rich.
-- **Deep Sensor Probing**:
-    - **NVIDIA GPU**: Real-time temperature, clock, and power monitoring via `nvidia-smi`.
-    - **Intel CPU**: Thermal zone monitoring via WMI ACPI.
-    - **Battery**: Detailed polling of charge levels and discharge rates.
-    - **Vendor Specifics**: Support for ASUS ROG EC (Armoury Crate) and Realtek Audio hardware detection.
-- **Heuristic Detection Engine**: 
-    - Cross-references open file handles against a known database of sensor paths (`/dev/cpu`, `/sys/class/hwmon`, etc.).
-    - Windows-specific fallback heuristics to identify WMI provider processes (`WmiPrvSE.exe`, `SensorsService.exe`, etc.).
-- **Smart Result Sorting**: Automatically floats processes with active sensor access to the top and highlights them.
-- **Filtering**: Ability to isolate specific processes or view *only* sensor-accessing ones with `--filter sensor`.
+- **Real-Time Live Monitor**: A high-performance `top`-style interactive dashboard powered by Rich.
+- **Unified Sensor Engine**:
+    - **UWP/Win32 Capabilities**: Detects active usage of Webcams, Microphones, Location, Bluetooth, Activity (step counters), and Gaze tracking via the Windows Registration Store.
+    - **App Attribution**: Intelligently identifies specifically which application (e.g., `chrome.exe`, `teams.exe`) is utilizing a hardware capability.
+    - **Hardware Thermals**: Real-time polling of NVIDIA GPU (temp/clock), Intel CPU (WMI ACPI), and Windows Temperature Probes.
+    - **Battery Snapshot**: Detailed charge levels and power consumption tracking.
+    - **Vendor Support**: Integrated detection for ASUS ROG EC (Armoury Crate) and Realtek Audio hardware.
+- **Optimized Polling**: High-speed, non-recursive registry and CIM polling ensures a sub-second UI refresh even on systems with hundreds of processes.
+- **Priority Detection**: Automatically floats and highlights processes with active sensor access to the top of the monitor.
+- **Filtering**: Isolate specific apps or view *only* active sensor-accessing processes with `--filter sensor`.
 
 ## 🛠 Installation
 
@@ -41,11 +40,11 @@ The primary command for real-time analysis:
 # Start the interactive dashboard (1s refresh)
 poetry run sensortrace monitor
 
-# Filter for a specific process
-poetry run sensortrace monitor --filter "chrome"
-
 # High-priority mode: only show processes with sensor access
-poetry run sensortrace monitor --filter sensor --interval 2
+poetry run sensortrace monitor --filter sensor --interval 1
+
+# Filter for a specific process keyword
+poetry run sensortrace monitor --filter "Teams"
 ```
 
 ### Log Viewing (Stubbed)
@@ -64,7 +63,7 @@ poetry run sensortrace stats --export csv
 - **Typer**: CLI Framework
 - **Rich**: Terminal UI, Layouts, and Live streams
 - **psutil**: System and process utilization
-- **WMI/PowerShell**: Deep Windows hardware integration
+- **WMI/CIM/PowerShell**: Deep Windows hardware and registry integration
 
 ## 🛡 Disclaimer
-*On Windows, some sensor access is inferred via WMI provider identification. For deep file handle inspection, running the terminal as Administrator is recommended.*
+*On Windows, UWP and desktop app sensor access is detected via CapabilityAccessManager registry flags. For deep file handle inspection, running the terminal as Administrator is recommended.*
